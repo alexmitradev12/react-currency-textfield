@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { NumericFormat, NumericFormatProps } from 'react-number-format';
 import Box from '@mui/material/Box';
-import { Paper, TextField } from '@mui/material';
+import { Paper, TextField, Button } from '@mui/material';
 import "./FormattedInputs.css";
 
 interface CustomProps {
@@ -25,48 +25,45 @@ const NumericFormatCustom = React.forwardRef<NumericFormatProps, CustomProps>(
 						},
 					});
 				}}
-				thousandSeparator
+				thousandSeparator=" "
 				valueIsNumericString
-				prefix="₽ "
-				decimalScale={2}
+				prefix=" "
+				decimalScale={6}
 				fixedDecimalScale
 			/>
 		);
 	},
 );
 
-interface State {
-	numberformat: string;
-}
+// interface State {
+// 	numberformat: string;
+// }
 
+//------------------------------------------------------------------------------------
 export default function FormattedInputs() {
-	const [values, setValues] = React.useState<State>({ numberformat: '', });
+	const [values, setValues] = React.useState<string>();
+	const [valueWithoutMask, setValueWithoutMask] = React.useState<string>();
 
-	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		setValues({
-			...values,
-			[event.target.name]: event.target.value,
-		});
+	const handleChangeWithMask = (e: { target: { value: string }; }) => {
+		setValues(e.target.value);
 	};
+
+	const handleChangeWithoutMask = (e: { target: { value: string }; }) => {
+		setValueWithoutMask(e.target.value);
+	}
+
+	const handleSetData = () => {
+		setValues(valueWithoutMask);
+		console.log(values);
+	}
 
 	return (
 		<Paper className='paper'>
 			<Box sx={{ '& > :not(style)': { m: 1, }, display: 'flex', flexDirection: 'column', alignItems: 'center' }} >
 				<TextField
-					label="Введите сумму, руб"
-					value={values.numberformat}
-					onChange={handleChange}
-					name="numberformat"
-					id="standard"
-					InputProps={{
-						inputComponent: NumericFormatCustom as any,
-					}}
-					variant="standard"
-				/>
-				<TextField
-					label="Введите сумму, руб"
-					value={values.numberformat}
-					onChange={handleChange}
+					label="Сумма с маской"
+					value={values}
+					onChange={handleChangeWithMask}
 					name="numberformat"
 					id="outlined"
 					InputProps={{
@@ -74,17 +71,8 @@ export default function FormattedInputs() {
 					}}
 					variant="outlined"
 				/>
-				<TextField
-					label="Введите сумму, руб"
-					value={values.numberformat}
-					onChange={handleChange}
-					name="numberformat"
-					id="filled"
-					InputProps={{
-						inputComponent: NumericFormatCustom as any,
-					}}
-					variant="filled"
-				/>
+				<TextField label="Сумма без маски" onChange={handleChangeWithoutMask}></TextField>
+				<Button variant="contained" onClick={handleSetData}>Внести данные</Button>
 			</Box>
 		</Paper>
 	);
